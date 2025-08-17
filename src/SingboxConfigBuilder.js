@@ -53,29 +53,38 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
     }
 
     addAutoSelectGroup(proxyList) {
+        // 如果proxyList为空，添加一个占位符防止空数组
+        const validProxyList = proxyList.length > 0 ? proxyList : ['DIRECT'];
         this.config.outbounds.unshift({
             type: "urltest",
             tag: t('outboundNames.Auto Select'),
-            outbounds: DeepCopy(proxyList),
+            outbounds: DeepCopy(validProxyList),
         });
     }
 
     addNodeSelectGroup(proxyList) {
-        proxyList.unshift('DIRECT', 'REJECT', t('outboundNames.Auto Select'));
+        // 如果proxyList为空，只添加基础选项
+        const validProxyList = proxyList.length > 0 
+            ? ['DIRECT', 'REJECT', t('outboundNames.Auto Select'), ...proxyList]
+            : ['DIRECT', 'REJECT'];
         this.config.outbounds.unshift({
             type: "selector",
             tag: t('outboundNames.Node Select'),
-            outbounds: proxyList
+            outbounds: validProxyList
         });
     }
 
     addOutboundGroups(outbounds, proxyList) {
         outbounds.forEach(outbound => {
             if (outbound !== t('outboundNames.Node Select')) {
+                const validProxyList = proxyList.length > 0 ? proxyList : [];
+                const baseOutbounds = validProxyList.length > 0 
+                    ? [t('outboundNames.Node Select'), ...validProxyList]
+                    : ['DIRECT', 'REJECT'];
                 this.config.outbounds.push({
                     type: "selector",
                     tag: t(`outboundNames.${outbound}`),
-                    outbounds: [t('outboundNames.Node Select'), ...proxyList]
+                    outbounds: baseOutbounds
                 });
             }
         });
@@ -84,20 +93,28 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
     addCustomRuleGroups(proxyList) {
         if (Array.isArray(this.customRules)) {
             this.customRules.forEach(rule => {
+                const validProxyList = proxyList.length > 0 ? proxyList : [];
+                const baseOutbounds = validProxyList.length > 0 
+                    ? [t('outboundNames.Node Select'), ...validProxyList]
+                    : ['DIRECT', 'REJECT'];
                 this.config.outbounds.push({
                     type: "selector",
                     tag: rule.name,
-                    outbounds: [t('outboundNames.Node Select'), ...proxyList]
+                    outbounds: baseOutbounds
                 });
             });
         }
     }
 
     addFallBackGroup(proxyList) {
+        const validProxyList = proxyList.length > 0 ? proxyList : [];
+        const baseOutbounds = validProxyList.length > 0 
+            ? [t('outboundNames.Node Select'), ...validProxyList]
+            : ['DIRECT', 'REJECT'];
         this.config.outbounds.push({
             type: "selector",
             tag: t('outboundNames.Fall Back'),
-            outbounds: [t('outboundNames.Node Select'), ...proxyList]
+            outbounds: baseOutbounds
         });
     }
 
