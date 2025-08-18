@@ -8,7 +8,7 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
         if (baseConfig === undefined) {
             baseConfig = SING_BOX_CONFIG;
             if (baseConfig.dns && baseConfig.dns.servers) {
-                baseConfig.dns.servers[0].detour = t('outboundNames.Node Select');
+                baseConfig.dns.servers[0].detour = "proxy";
             }
         }
         super(inputString, baseConfig, lang, userAgent);
