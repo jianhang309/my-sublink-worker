@@ -123,12 +123,15 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
         const proxyOutbound = this.config.outbounds.find(outbound => outbound.tag === 'proxy');
         if (proxyOutbound && proxyOutbound.type === 'selector') {
             const validProxyList = proxyList.length > 0 ? proxyList : [];
-            const autoSelectTag = t('outboundNames.Auto Select');
             
             // 构建 proxy outbound 的选项 - 不包含特殊字符的 outbound
             const proxyOptions = ['DIRECT', 'REJECT'];
             if (validProxyList.length > 0) {
-                proxyOptions.push(autoSelectTag, ...validProxyList);
+                // 只添加不包含特殊字符的代理节点
+                const cleanProxyList = validProxyList.filter(proxy => 
+                    !proxy.includes('🚀') && !proxy.includes('⚡') && !proxy.includes('🐟')
+                );
+                proxyOptions.push(...cleanProxyList);
             }
             
             proxyOutbound.outbounds = proxyOptions;
