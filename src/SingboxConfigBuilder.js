@@ -69,17 +69,17 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
             : ['DIRECT', 'REJECT'];
         this.config.outbounds.unshift({
             type: "selector",
-            tag: t('outboundNames.Node Select'),
+            tag: "proxy",
             outbounds: validProxyList
         });
     }
 
     addOutboundGroups(outbounds, proxyList) {
         outbounds.forEach(outbound => {
-            if (outbound !== t('outboundNames.Node Select')) {
+            if (outbound !== "proxy") {
                 const validProxyList = proxyList.length > 0 ? proxyList : [];
                 const baseOutbounds = validProxyList.length > 0 
-                    ? [t('outboundNames.Node Select'), ...validProxyList]
+                    ? ['proxy', ...validProxyList]
                     : ['DIRECT', 'REJECT'];
                 this.config.outbounds.push({
                     type: "selector",
@@ -95,7 +95,7 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
             this.customRules.forEach(rule => {
                 const validProxyList = proxyList.length > 0 ? proxyList : [];
                 const baseOutbounds = validProxyList.length > 0 
-                    ? [t('outboundNames.Node Select'), ...validProxyList]
+                    ? ['proxy', ...validProxyList]
                     : ['DIRECT', 'REJECT'];
                 this.config.outbounds.push({
                     type: "selector",
@@ -109,13 +109,30 @@ export class SingboxConfigBuilder extends BaseConfigBuilder {
     addFallBackGroup(proxyList) {
         const validProxyList = proxyList.length > 0 ? proxyList : [];
         const baseOutbounds = validProxyList.length > 0 
-            ? [t('outboundNames.Node Select'), ...validProxyList]
+            ? ['proxy', ...validProxyList]
             : ['DIRECT', 'REJECT'];
         this.config.outbounds.push({
             type: "selector",
             tag: t('outboundNames.Fall Back'),
             outbounds: baseOutbounds
         });
+    }
+
+    updateProxyOutbound(proxyList) {
+        // 更新 proxy outbound 的选项
+        const proxyOutbound = this.config.outbounds.find(outbound => outbound.tag === 'proxy');
+        if (proxyOutbound && proxyOutbound.type === 'selector') {
+            const validProxyList = proxyList.length > 0 ? proxyList : [];
+            const autoSelectTag = t('outboundNames.Auto Select');
+            
+            // 构建 proxy outbound 的选项 - 不包含特殊字符的 outbound
+            const proxyOptions = ['DIRECT', 'REJECT'];
+            if (validProxyList.length > 0) {
+                proxyOptions.push(autoSelectTag, ...validProxyList);
+            }
+            
+            proxyOutbound.outbounds = proxyOptions;
+        }
     }
 
     formatConfig() {
