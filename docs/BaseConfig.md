@@ -23,7 +23,7 @@
         "address": "tcp://1.1.1.1",
         "address_resolver": "dns_resolver",
         "strategy": "ipv4_only",
-        "detour": "🚀 节点选择"
+        "detour": "proxy"
       },
       {
         "tag": "dns_direct", 
@@ -102,7 +102,8 @@
   ],
   "outbounds": [
     { "type": "socks", "server": "127.0.0.1", "server_port": 2081, "tag": "REJECT" },
-    { "type": "direct", "tag": "DIRECT" }
+    { "type": "direct", "tag": "DIRECT" },
+    { "type": "selector", "tag": "proxy", "outbounds": ["DIRECT", "REJECT"] }
   ],
   "route": {
     "rule_set": [

@@ -469,7 +469,7 @@ export const SING_BOX_CONFIG = {
 	outbounds: [
 		{ type: 'block', tag: 'REJECT' },
 		{ type: "direct", tag: 'DIRECT' },
-		{ type: "selector", tag: "proxy", outbounds: ["DIRECT"] }
+		{ type: "selector", tag: "proxy", outbounds: ["DIRECT", "REJECT"] }
 	],
 	route : {
 		"rule_set": [

@@ -156,6 +156,7 @@ export class BaseConfigBuilder {
         this.addOutboundGroups(outbounds, proxyList);
         this.addCustomRuleGroups(proxyList);
         this.addFallBackGroup(proxyList);
+        this.updateProxyOutbound(proxyList);
     }
 
     generateRules() {
